@@ -4,13 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Title>This is a .NET Client library that communicates with the Sessionize API to download sessions, speakers and other information about the conference(s) you organize</Title>
+    <Title>.NET Sessionize API Client Library</Title>
     <Authors>Eduard Keilholz</Authors>
     <Description>This is a .NET Client library that communicates with the Sessionize API to download sessions, speakers and other information about the conference(s) you organize</Description>
+    <PackageProjectUrl>https://github.com/nikneem/sessionize-api-client</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="DependencyInjection\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="https:\github.com\nikneem\sessionize-api-client\blob\main\README.md" />
   </ItemGroup>
 
   <ItemGroup>

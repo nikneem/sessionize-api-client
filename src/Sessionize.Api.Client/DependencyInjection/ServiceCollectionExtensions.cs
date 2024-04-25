@@ -20,6 +20,11 @@ public static class ServiceCollectionExtensions
         var sessionizeConfiguration = configuration.GetSection(SessionizeConfiguration.SectionName)
             .Get<SessionizeConfiguration>();
 
+        if (sessionizeConfiguration == null)
+        {
+            throw new InvalidOperationException($"The configuration section {SessionizeConfiguration.SectionName} is missing");
+        }
+
         services.AddHttpClient(SessionizeConstants.HttpClientName, client =>
             {
                 client.BaseAddress = new Uri(sessionizeConfiguration.BaseUrl);

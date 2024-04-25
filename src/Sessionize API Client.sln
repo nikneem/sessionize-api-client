@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33717.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sessionize.Api.Client", "Sessionize.Api.Client\Sessionize.Api.Client.csproj", "{E9F13D21-493A-4EEA-9F54-52499FEB2C01}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9F13D21-493A-4EEA-9F54-52499FEB2C01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9F13D21-493A-4EEA-9F54-52499FEB2C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9F13D21-493A-4EEA-9F54-52499FEB2C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9F13D21-493A-4EEA-9F54-52499FEB2C01}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D711FEA8-1801-4B5B-80B4-8027891F43AA}
+	EndGlobalSection
+EndGlobal

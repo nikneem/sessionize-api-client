@@ -1,0 +1,56 @@
+name: Publish NuGet Package
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    name: Update NuGet
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0"
+
+      # Install GitVersion to automatically create a semantic
+      # version from your repository:
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v1.1.1
+        with:
+          versionSpec: "5.x"
+
+      # Run GitVersion (set an ID to later fetch values)
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v1.1.1
+        with:
+          useConfigFile: true
+
+      - run: dotnet build src -c Release /p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} /p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} /p:InformationalVersion=${{ steps.gitversion.outputs.Sha }}
+      - run: dotnet test src
+      - run: dotnet pack src/Sessionize.Api.Client/Sessionize.Api.Client.csproj -c Release -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} -p:InformationalVersion=${{ steps.gitversion.outputs.Sha }} -p:PackageVersion=${{ steps.gitversion.outputs.MajorMinorPatch }}
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: src/Sessionize.Api.Client/bin/Release/*${{ steps.gitversion.outputs.MajorMinorPatch }}.nupkg
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    name: Deploy NuGet Package
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.2.0
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./package
+      - name: Publish
+        run: nuget push package/*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}

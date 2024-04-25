@@ -7,7 +7,7 @@
     <Authors>Eduard Keilholz</Authors>
     <Description>This is a .NET Client library that communicates with the Sessionize API to download sessions, speakers and other information about the conference(s) you organize</Description>
     <PackageProjectUrl>https://github.com/nikneem/sessionize-api-client</PackageProjectUrl>
-    <PackageIcon>assets/sessionize-icon.png</PackageIcon>
+    <PackageIcon>sessionize-icon.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="DependencyInjection\" />

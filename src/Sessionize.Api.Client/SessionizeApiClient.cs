@@ -21,26 +21,52 @@ public class SessionizeApiClient : ISessionizeApiClient
 
     public string? SessionizeApiId { get; set; }
 
-    public async Task<List<SpeakerDetailsDto>> GetSpeakersListAsync()
+    public Task<AllDataDto> GetAllDataAsync()
     {
-        _logger.LogInformation("Getting speakers list");
-        var httpClient = _httpClientFactory.CreateClient(SessionizeConstants.HttpClientName);
-        _logger.LogInformation("Getting speakers list from {Endpoint}", GetViewEndpoint("Speakers"));
-        var response = await httpClient.GetAsync(GetViewEndpoint("Speakers"));
-        response.EnsureSuccessStatusCode();
-        var responseList =  await DeserializeResponse<List<SpeakerDetailsDto>>(response.Content);
-        return responseList ?? new List<SpeakerDetailsDto>();
+        _logger.LogInformation("Getting all data");
+        return SendRequestAsync<AllDataDto>("All");
     }
 
-    public async Task<SessionListDto> GetSessionsListAsync()
+    public Task<List<ScheduleGridDto>> GetScheduleGridAsync()
+    {
+        _logger.LogInformation("Getting schedule grid");
+        return SendRequestAsync<List<ScheduleGridDto>>("GridSmart");
+    }
+
+    public Task<List<SpeakerDetailsDto>> GetSpeakersListAsync()
+    {
+        _logger.LogInformation("Getting speakers list");
+        return SendRequestAsync<List<SpeakerDetailsDto>>("Speakers");
+    }
+
+    public Task<List<SessionListDto>> GetSessionsListAsync()
     {
         _logger.LogInformation("Getting sessions list");
+        return SendRequestAsync<List<SessionListDto>>("Sessions");
+    }
+
+    public Task<List<SpeakerWallDto>> GetSpeakerWallAsync()
+    {
+        _logger.LogInformation("Getting speaker wall");
+        return SendRequestAsync<List<SpeakerWallDto>>("SpeakerWall");
+    }
+
+    private async Task<TResult> SendRequestAsync<TResult>(string endpoint)
+    {
         var httpClient = _httpClientFactory.CreateClient(SessionizeConstants.HttpClientName);
-        _logger.LogInformation("Getting sessions list from {Endpoint}", GetViewEndpoint("Sessions"));
-        var response = await httpClient.GetAsync(GetViewEndpoint("Sessions"));
+        _logger.LogInformation("Sending GET request to endpoint {Endpoint}", GetViewEndpoint(endpoint));
+        var response = await httpClient.SendAsync(GetRequest(endpoint));
         response.EnsureSuccessStatusCode();
-        var responseList =  await DeserializeResponse<SessionListDto>(response.Content);
-        return responseList ?? new(false, string.Empty, string.Empty, new List<SessionDetailsDto>());
+        return await DeserializeResponse<TResult>(response.Content);
+    }
+
+    private HttpRequestMessage GetRequest(string viewName)
+    {
+        return new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(GetViewEndpoint(viewName), UriKind.Relative)
+        };
     }
 
     private string GetViewEndpoint(string viewName)
@@ -51,20 +77,23 @@ public class SessionizeApiClient : ISessionizeApiClient
             {
                 throw new InvalidOperationException("SessionizeConfiguration is not set");
             }
+
             SessionizeApiId = _sessionizeConfiguration.Value.ApiId;
         }
 
-        return $"/{SessionizeApiId}/view/{viewName}";
+        return $"{SessionizeApiId}/view/{viewName}";
     }
 
-    private async Task<TResponse?> DeserializeResponse<TResponse>(HttpContent responseContent)
+    private async Task<TResponse> DeserializeResponse<TResponse>(HttpContent responseContent)
     {
         var responseContentString = await responseContent.ReadAsStringAsync();
         if (string.IsNullOrWhiteSpace(responseContentString))
         {
             throw new InvalidOperationException("Response content is empty");
         }
-        var responseObject = JsonSerializer.Deserialize<TResponse>(responseContentString, _jsonDeSerializerOptions.Value);
+
+        var responseObject =
+            JsonSerializer.Deserialize<TResponse>(responseContentString, _jsonDeSerializerOptions.Value);
 
         return responseObject;
     }

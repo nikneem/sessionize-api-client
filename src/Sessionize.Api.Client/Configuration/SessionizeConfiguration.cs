@@ -20,7 +20,7 @@ public class SessionizeConfiguration
     {
         if (string.IsNullOrWhiteSpace(_baseUrl))
         {
-            return string.Empty;
+            return "https://sessionize.com/";
         }
         return _baseUrl.EndsWith("api/v2/", StringComparison.OrdinalIgnoreCase) ? _baseUrl : $"{_baseUrl}/api/v2/";
     }

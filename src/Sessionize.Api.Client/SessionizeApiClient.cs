@@ -92,9 +92,11 @@ public class SessionizeApiClient : ISessionizeApiClient
             throw new InvalidOperationException("Response content is empty");
         }
 
-        var responseObject =
-            JsonSerializer.Deserialize<TResponse>(responseContentString, _jsonDeSerializerOptions.Value);
-
+        var responseObject = JsonSerializer.Deserialize<TResponse>(responseContentString, _jsonDeSerializerOptions.Value);
+        if (responseObject == null)
+        {
+            throw new InvalidDataException("Cannot deserialize the HTTP Response content into a valid object");
+        }
         return responseObject;
     }
 

@@ -22,10 +22,10 @@ public class SessionizeIntegrationTestBase
         _configurationBuilder.AddJsonFile(jsonFile);
     }
 
-    protected T GetService<T>()
+    protected TService GetService<TService>() where TService : class
     {
         _serviceProvider ??= _serviceCollection.BuildServiceProvider();
 
-        return _serviceProvider.GetRequiredService<T>();
+        return _serviceProvider.GetRequiredService<TService>();
     }
 }

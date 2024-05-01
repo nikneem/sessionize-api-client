@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Sessionize.Api.Client.Abstractions;
 using Sessionize.Api.Client.Configuration;
+using Sessionize.Api.Client.Exceptions;
 
 namespace Sessionize.Api.Client.DependencyInjection;
 
@@ -22,7 +23,7 @@ public static class ServiceCollectionExtensions
 
         if (sessionizeConfiguration == null)
         {
-            throw new InvalidOperationException($"The configuration section {SessionizeConfiguration.SectionName} is missing");
+            throw new SessionizeApiClientException(ErrorCode.InvalidConfiguration);
         }
 
         services.AddHttpClient(SessionizeConstants.HttpClientName, client =>

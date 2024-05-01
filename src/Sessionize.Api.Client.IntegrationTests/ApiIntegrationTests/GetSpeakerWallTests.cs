@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Sessionize.Api.Client.Abstractions;
+using Sessionize.Api.Client.Exceptions;
 
 namespace Sessionize.Api.Client.IntegrationTests.ApiIntegrationTests;
 
@@ -13,7 +14,7 @@ public class GetSpeakerWallTests : SessionizeIntegrationTestBase
 
         // Arrange
         var client = GetService<ISessionizeApiClient>();
-        
+
         // Act
         var result = await client.GetSpeakerWallAsync();
 
@@ -53,7 +54,7 @@ public class GetSpeakerWallTests : SessionizeIntegrationTestBase
         var act = () => client.GetSpeakerWallAsync();
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().ThrowAsync<SessionizeApiClientException>();
     }
 
     //[Fact]

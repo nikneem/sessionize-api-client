@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Sessionize.Api.Client.Abstractions;
 using Sessionize.Api.Client.Configuration;
 using Sessionize.Api.Client.DataTransferObjects;
+using Sessionize.Api.Client.Exceptions;
 
 namespace Sessionize.Api.Client;
 
@@ -75,7 +76,7 @@ public class SessionizeApiClient : ISessionizeApiClient
         {
             if (string.IsNullOrWhiteSpace(_sessionizeConfiguration.Value.ApiId))
             {
-                throw new InvalidOperationException("SessionizeConfiguration is not set");
+                throw new SessionizeApiClientException(ErrorCode.InvalidConfiguration);
             }
 
             SessionizeApiId = _sessionizeConfiguration.Value.ApiId;
@@ -89,13 +90,13 @@ public class SessionizeApiClient : ISessionizeApiClient
         var responseContentString = await responseContent.ReadAsStringAsync();
         if (string.IsNullOrWhiteSpace(responseContentString))
         {
-            throw new InvalidOperationException("Response content is empty");
+            throw new SessionizeApiClientException(ErrorCode.SessionizeResponseEmpty);
         }
 
         var responseObject = JsonSerializer.Deserialize<TResponse>(responseContentString, _jsonDeSerializerOptions.Value);
         if (responseObject == null)
         {
-            throw new InvalidDataException("Cannot deserialize the HTTP Response content into a valid object");
+            throw new SessionizeApiClientException(ErrorCode.DeserializationFailed);
         }
         return responseObject;
     }

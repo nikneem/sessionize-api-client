@@ -55,6 +55,7 @@ public class SessionizeApiClient : ISessionizeApiClient
     private async Task<TResult> SendRequestAsync<TResult>(string endpoint)
     {
         var httpClient = _httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(_sessionizeConfiguration.Value.BaseUrl);
         _logger.LogInformation("Sending GET request to endpoint {Endpoint}", GetViewEndpoint(endpoint));
         var response = await httpClient.SendAsync(GetRequest(endpoint));
         response.EnsureSuccessStatusCode();

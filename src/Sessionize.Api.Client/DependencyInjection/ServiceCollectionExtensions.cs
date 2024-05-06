@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
             throw new SessionizeApiClientException(ErrorCode.InvalidConfiguration);
         }
 
-        services.AddHttpClient(SessionizeConstants.HttpClientName, client =>
+        services.AddHttpClient<SessionizeApiClient>(client =>
             {
                 client.BaseAddress = new Uri(sessionizeConfiguration.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(10);

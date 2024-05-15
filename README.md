@@ -1,4 +1,12 @@
 [![Publish NuGet Package](https://github.com/nikneem/sessionize-api-client/actions/workflows/main.yml/badge.svg)](https://github.com/nikneem/sessionize-api-client/actions/workflows/main.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=bugs)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
 
 # Sessionize HTTP Client Library for .NET
 

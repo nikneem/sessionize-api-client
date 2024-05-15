@@ -86,7 +86,7 @@ public class SessionizeApiClient : ISessionizeApiClient
         return $"{SessionizeApiId}/view/{viewName}";
     }
 
-    private async Task<TResponse> DeserializeResponse<TResponse>(HttpContent responseContent)
+    private async Task<TResponse> DeserializeResponse<TResponse>(HttpContent responseContent) where TResponse : class
     {
         var responseContentString = await responseContent.ReadAsStringAsync();
         if (string.IsNullOrWhiteSpace(responseContentString))

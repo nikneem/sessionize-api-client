@@ -52,7 +52,7 @@ public class SessionizeApiClient : ISessionizeApiClient
         return SendRequestAsync<List<SpeakerWallDto>>("SpeakerWall");
     }
 
-    private async Task<TResult> SendRequestAsync<TResult>(string endpoint)
+    private async Task<TResult> SendRequestAsync<TResult>(string endpoint) where TResult : class
     {
         var httpClient = _httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(_sessionizeConfiguration.Value.BaseUrl);

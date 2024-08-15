@@ -22,42 +22,42 @@ public class SessionizeApiClient : ISessionizeApiClient
 
     public string? SessionizeApiId { get; set; }
 
-    public Task<AllDataDto> GetAllDataAsync()
+    public Task<AllDataDto> GetAllDataAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Getting all data");
         return SendRequestAsync<AllDataDto>("All");
     }
 
-    public Task<List<ScheduleGridDto>> GetScheduleGridAsync()
+    public Task<List<ScheduleGridDto>> GetScheduleGridAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Getting schedule grid");
         return SendRequestAsync<List<ScheduleGridDto>>("GridSmart");
     }
 
-    public Task<List<SpeakerDetailsDto>> GetSpeakersListAsync()
+    public Task<List<SpeakerDetailsDto>> GetSpeakersListAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Getting speakers list");
         return SendRequestAsync<List<SpeakerDetailsDto>>("Speakers");
     }
 
-    public Task<List<SessionListDto>> GetSessionsListAsync()
+    public Task<List<SessionListDto>> GetSessionsListAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Getting sessions list");
         return SendRequestAsync<List<SessionListDto>>("Sessions");
     }
 
-    public Task<List<SpeakerWallDto>> GetSpeakerWallAsync()
+    public Task<List<SpeakerWallDto>> GetSpeakerWallAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Getting speaker wall");
         return SendRequestAsync<List<SpeakerWallDto>>("SpeakerWall");
     }
 
-    private async Task<TResult> SendRequestAsync<TResult>(string endpoint) where TResult : class
+    private async Task<TResult> SendRequestAsync<TResult>(string endpoint, CancellationToken cancellationToken) where TResult : class
     {
         var httpClient = _httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(_sessionizeConfiguration.Value.BaseUrl);
         _logger.LogInformation("Sending GET request to endpoint {Endpoint}", GetViewEndpoint(endpoint));
-        var response = await httpClient.SendAsync(GetRequest(endpoint));
+        var response = await httpClient.SendAsync(GetRequest(endpoint), cancellationToken);
         response.EnsureSuccessStatusCode();
         return await DeserializeResponse<TResult>(response.Content);
     }

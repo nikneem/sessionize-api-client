@@ -14,7 +14,7 @@ public class SessionizeApiClient : ISessionizeApiClient
     private readonly ILogger<SessionizeApiClient> _logger;
     private readonly IOptions<SessionizeConfiguration> _sessionizeConfiguration;
 
-    private readonly Lazy<JsonSerializerOptions> _jsonDeSerializerOptions = new Lazy<JsonSerializerOptions>(() =>
+    private readonly Lazy<JsonSerializerOptions> _jsonDeSerializerOptions = new(() =>
         new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -22,42 +22,43 @@ public class SessionizeApiClient : ISessionizeApiClient
 
     public string? SessionizeApiId { get; set; }
 
-    public Task<AllDataDto> GetAllDataAsync(CancellationToken cancellationToken)
+    public Task<AllDataDto> GetAllDataAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting all data");
-        return SendRequestAsync<AllDataDto>("All");
+        return SendRequestAsync<AllDataDto>("All", cancellationToken);
     }
 
-    public Task<List<ScheduleGridDto>> GetScheduleGridAsync(CancellationToken cancellationToken)
+    public Task<List<ScheduleGridDto>> GetScheduleGridAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting schedule grid");
-        return SendRequestAsync<List<ScheduleGridDto>>("GridSmart");
+        return SendRequestAsync<List<ScheduleGridDto>>("GridSmart", cancellationToken);
     }
 
-    public Task<List<SpeakerDetailsDto>> GetSpeakersListAsync(CancellationToken cancellationToken)
+    public Task<List<SpeakerDetailsDto>> GetSpeakersListAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting speakers list");
-        return SendRequestAsync<List<SpeakerDetailsDto>>("Speakers");
+        return SendRequestAsync<List<SpeakerDetailsDto>>("Speakers", cancellationToken);
     }
 
-    public Task<List<SessionListDto>> GetSessionsListAsync(CancellationToken cancellationToken)
+    public Task<List<SessionListDto>> GetSessionsListAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting sessions list");
-        return SendRequestAsync<List<SessionListDto>>("Sessions");
+        return SendRequestAsync<List<SessionListDto>>("Sessions", cancellationToken);
     }
 
-    public Task<List<SpeakerWallDto>> GetSpeakerWallAsync(CancellationToken cancellationToken)
+    public Task<List<SpeakerWallDto>> GetSpeakerWallAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting speaker wall");
-        return SendRequestAsync<List<SpeakerWallDto>>("SpeakerWall");
+        return SendRequestAsync<List<SpeakerWallDto>>("SpeakerWall", cancellationToken);
     }
 
-    private async Task<TResult> SendRequestAsync<TResult>(string endpoint, CancellationToken cancellationToken) where TResult : class
+    private async Task<TResult> SendRequestAsync<TResult>(string endpoint, CancellationToken? cancellationToken) where TResult : class
     {
+        var ct = cancellationToken ?? CancellationToken.None;
         var httpClient = _httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(_sessionizeConfiguration.Value.BaseUrl);
         _logger.LogInformation("Sending GET request to endpoint {Endpoint}", GetViewEndpoint(endpoint));
-        var response = await httpClient.SendAsync(GetRequest(endpoint), cancellationToken);
+        var response = await httpClient.SendAsync(GetRequest(endpoint), ct);
         response.EnsureSuccessStatusCode();
         return await DeserializeResponse<TResult>(response.Content);
     }

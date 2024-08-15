@@ -12,6 +12,7 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>sessionize-icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>Added support for Cancellation Tokens so the HTTP Requests to the Sessionize API can be cancelled</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="DependencyInjection\" />

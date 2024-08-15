@@ -2,7 +2,7 @@
 
 public record SessionDetailsDto(string Id,
     string Title,
-    string Description,
+    string? Description,
     DateTimeOffset StartsAt,
     DateTimeOffset EndsAt,
     bool IsServiceSession,

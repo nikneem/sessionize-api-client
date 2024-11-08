@@ -1,6 +1,8 @@
-﻿namespace Sessionize.Api.Client.DataTransferObjects;
+﻿using Sessionize.Api.Client.ValueObjects;
 
-public record SpeakerDetailsDto(
+namespace Sessionize.Api.Client.DataTransferObjects;
+
+public record SpeakerDetailsResponse(
     Guid Id, 
     string FirstName, 
     string LastName, 
@@ -9,4 +11,4 @@ public record SpeakerDetailsDto(
     string TagLine, 
     string ProfilePicture,
     bool IsTopSpeaker,
-    SpeakerSessionDto[] Sessions);
+    SpeakerSession[] Sessions);

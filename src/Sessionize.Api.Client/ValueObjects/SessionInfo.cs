@@ -1,6 +1,6 @@
-﻿namespace Sessionize.Api.Client.DataTransferObjects;
+﻿namespace Sessionize.Api.Client.ValueObjects;
 
-public record SessionDetailsDto(string Id,
+public record SessionInfo(string Id,
     string Title,
     string? Description,
     DateTimeOffset StartsAt,
@@ -12,4 +12,4 @@ public record SessionDetailsDto(string Id,
     string Status,
     bool IsInformed,
     bool IsConfirmed,
-    List<SessionSpeakerDto> Speakers);
+    List<SessionSpeaker> Speakers);

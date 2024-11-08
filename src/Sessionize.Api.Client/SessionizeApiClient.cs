@@ -22,34 +22,34 @@ public class SessionizeApiClient : ISessionizeApiClient
 
     public string? SessionizeApiId { get; set; }
 
-    public Task<AllDataDto> GetAllDataAsync(CancellationToken? cancellationToken = null)
+    public Task<AllDataResponse> GetAllDataAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting all data");
-        return SendRequestAsync<AllDataDto>("All", cancellationToken);
+        return SendRequestAsync<AllDataResponse>("All", cancellationToken);
     }
 
-    public Task<List<ScheduleGridDto>> GetScheduleGridAsync(CancellationToken? cancellationToken = null)
+    public Task<List<ScheduleGridResponse>> GetScheduleGridAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting schedule grid");
-        return SendRequestAsync<List<ScheduleGridDto>>("GridSmart", cancellationToken);
+        return SendRequestAsync<List<ScheduleGridResponse>>("GridSmart", cancellationToken);
     }
 
-    public Task<List<SpeakerDetailsDto>> GetSpeakersListAsync(CancellationToken? cancellationToken = null)
+    public Task<List<SpeakerDetailsResponse>> GetSpeakersListAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting speakers list");
-        return SendRequestAsync<List<SpeakerDetailsDto>>("Speakers", cancellationToken);
+        return SendRequestAsync<List<SpeakerDetailsResponse>>("Speakers", cancellationToken);
     }
 
-    public Task<List<SessionListDto>> GetSessionsListAsync(CancellationToken? cancellationToken = null)
+    public Task<List<SessionListResponse>> GetSessionsListAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting sessions list");
-        return SendRequestAsync<List<SessionListDto>>("Sessions", cancellationToken);
+        return SendRequestAsync<List<SessionListResponse>>("Sessions", cancellationToken);
     }
 
-    public Task<List<SpeakerWallDto>> GetSpeakerWallAsync(CancellationToken? cancellationToken = null)
+    public Task<List<SpeakerWallResponse>> GetSpeakerWallAsync(CancellationToken? cancellationToken = null)
     {
         _logger.LogInformation("Getting speaker wall");
-        return SendRequestAsync<List<SpeakerWallDto>>("SpeakerWall", cancellationToken);
+        return SendRequestAsync<List<SpeakerWallResponse>>("SpeakerWall", cancellationToken);
     }
 
     private async Task<TResult> SendRequestAsync<TResult>(string endpoint, CancellationToken? cancellationToken) where TResult : class

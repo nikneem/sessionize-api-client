@@ -1,6 +1,6 @@
-﻿namespace Sessionize.Api.Client.DataTransferObjects;
+﻿namespace Sessionize.Api.Client.ValueObjects;
 
-public record AllDataSpeakerDto(
+public record SpeakerDetails(
     string Id,
     string FirstName,
     string LastName,

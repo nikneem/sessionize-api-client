@@ -1,6 +1,6 @@
-﻿namespace Sessionize.Api.Client.DataTransferObjects;
+﻿namespace Sessionize.Api.Client.ValueObjects;
 
-public record AllDataSessionDto(
+public record SessionDetails(
     string Id,
     string Title,
     string Description,

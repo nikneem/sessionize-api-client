@@ -9,7 +9,7 @@ public class SessionizeConfigurationValidation : IValidateOptions<SessionizeConf
         var errorList = new List<string>();
         if (string.IsNullOrWhiteSpace(options.BaseUrl))
         {
-            errorList.Add($"The app setting {SessionizeConfiguration.SectionName}.BaseUrl cannot be null or empty");
+            errorList.Add($"The app setting {SessionizeConfiguration.SectionName}.{nameof(options.BaseUrl)} cannot be null or empty");
         }
         return errorList.Count > 0 ? ValidateOptionsResult.Fail(errorList) : ValidateOptionsResult.Success;
     }

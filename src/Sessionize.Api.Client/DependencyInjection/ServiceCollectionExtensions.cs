@@ -14,18 +14,12 @@ public static class ServiceCollectionExtensions
         string? configurationSectionName = null)
     {
         var sectionName = configurationSectionName?? SessionizeConfiguration.SectionName;
+
         var configuration = configurationBuilder.Build();
         services.AddOptions<SessionizeConfiguration>()
             .Bind(configuration.GetSection(sectionName))
             .ValidateOnStart();
-
-        var sessionizeConfiguration = configuration.GetSection(sectionName)
-            .Get<SessionizeConfiguration>();
-
-        if (sessionizeConfiguration == null)
-        {
-            throw new SessionizeApiClientException(ErrorCode.InvalidConfiguration);
-        }
+       
 
         services.AddHttpClient<SessionizeApiClient>()
             .AddStandardResilienceHandler();

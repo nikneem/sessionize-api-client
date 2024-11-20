@@ -42,6 +42,24 @@ public class GetScheduleTests : SessionizeIntegrationTestBase
     }
 
     [Fact]
+    public async Task FetchSchedule_WhenApiIdParameterPassed_WhenCalled_ReturnsSchedule()
+    {
+        WithAppSettingsConfiguration("appsettings-without-api-id.json");
+        WithSessionizeClientRegistered();
+
+        // Arrange
+        var client = GetService<ISessionizeApiClient>();
+
+        // Act
+        var result = await client.GetScheduleGridAsync("45br5oxc");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
+    }
+
+
+    [Fact]
     public async Task FetchSchedule_WhenUnconfigured_WhenCalled_ReturnsSchedule()
     {
         WithAppSettingsConfiguration("appsettings-without-api-id.json");

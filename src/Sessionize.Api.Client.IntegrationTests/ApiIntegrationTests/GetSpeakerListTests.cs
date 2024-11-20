@@ -42,6 +42,23 @@ public class GetSpeakerListTests : SessionizeIntegrationTestBase
     }
 
     [Fact]
+    public async Task FetchSpeakerList_WhenApiIdParameterPassed_WhenCalled_ReturnsSpeakerList()
+    {
+        WithAppSettingsConfiguration("appsettings-without-api-id.json");
+        WithSessionizeClientRegistered();
+
+        // Arrange
+        var client = GetService<ISessionizeApiClient>();
+
+        // Act
+        var result = await client.GetSpeakersListAsync("45br5oxc");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
     public async Task FetchSpeakerList_WhenUnconfigured_WhenCalled_ReturnsSpeakerList()
     {
         WithAppSettingsConfiguration("appsettings-without-api-id.json");

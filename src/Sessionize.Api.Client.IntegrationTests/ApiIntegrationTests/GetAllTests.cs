@@ -40,6 +40,22 @@ public class GetAllTests : SessionizeIntegrationTestBase
     }
 
     [Fact]
+    public async Task FetchSchedule_WhenPassingApiId_WhenCalled_ReturnsSchedule()
+    {
+        WithAppSettingsConfiguration("appsettings-without-api-id.json");
+        WithSessionizeClientRegistered();
+
+        // Arrange
+        var client = GetService<ISessionizeApiClient>();
+
+        // Act
+        var result = await client.GetAllDataAsync("45br5oxc");
+
+        // Assert
+        Assert.NotNull(result);
+    }
+
+    [Fact]
     public async Task FetchSchedule_WhenUnconfigured_WhenCalled_ReturnsSchedule()
     {
         WithAppSettingsConfiguration("appsettings-without-api-id.json");

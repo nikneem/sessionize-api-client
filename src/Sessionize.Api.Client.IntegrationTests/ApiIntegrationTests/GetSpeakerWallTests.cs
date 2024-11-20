@@ -42,6 +42,23 @@ public class GetSpeakerWallTests : SessionizeIntegrationTestBase
     }
 
     [Fact]
+    public async Task FetchSpeakerWall_WhenApiIdParameterPassed_WhenCalled_ReturnsSpeakerWall()
+    {
+        WithAppSettingsConfiguration("appsettings-without-api-id.json");
+        WithSessionizeClientRegistered();
+
+        // Arrange
+        var client = GetService<ISessionizeApiClient>();
+
+        // Act
+        var result = await client.GetSpeakerWallAsync("45br5oxc");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
     public async Task FetchSpeakerWall_WhenUnconfigured_WhenCalled_ReturnsSpeakerWall()
     {
         WithAppSettingsConfiguration("appsettings-without-api-id.json");

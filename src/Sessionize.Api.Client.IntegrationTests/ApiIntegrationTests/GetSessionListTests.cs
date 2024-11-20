@@ -42,6 +42,23 @@ public class GetSessionListTests : SessionizeIntegrationTestBase
     }
 
     [Fact]
+    public async Task FetchSessionList_WhenApiIdParameterPassed_WhenCalled_ReturnsSessionList()
+    {
+        WithAppSettingsConfiguration("appsettings-without-api-id.json");
+        WithSessionizeClientRegistered();
+
+        // Arrange
+        var client = GetService<ISessionizeApiClient>();
+
+        // Act
+        var result = await client.GetSessionsListAsync("45br5oxc");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
     public async Task FetchSessionList_WhenUnconfigured_WhenCalled_ReturnsSessionList()
     {
         WithAppSettingsConfiguration("appsettings-without-api-id.json");

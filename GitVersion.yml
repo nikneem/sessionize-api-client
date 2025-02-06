@@ -13,12 +13,8 @@ update-build-number: true
 semantic-version-format: Strict
 workflow: TrunkBased/preview1
 strategies:
-  - Fallback
   - ConfiguredNextVersion
-  - MergeMessage
-  - TaggedCommit
-  - TrackReleaseBranches
-  - VersionInBranchName
+  - Mainline
 branches:
   main:
     label: ""

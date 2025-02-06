@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Sessionize.Api.Client.Abstractions;
+﻿using Sessionize.Api.Client.Abstractions;
 using Sessionize.Api.Client.Exceptions;
 
 namespace Sessionize.Api.Client.IntegrationTests.ApiIntegrationTests;
@@ -68,6 +67,6 @@ public class GetAllTests : SessionizeIntegrationTestBase
         var act = () => client.GetAllDataAsync();
 
         // Assert
-        await act.Should().ThrowAsync<SessionizeApiClientException>();
+        await Assert.ThrowsAsync<SessionizeApiClientException>(act);
     }
 }

@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Sessionize.Api.Client.Abstractions;
+﻿using Sessionize.Api.Client.Abstractions;
 using Sessionize.Api.Client.Exceptions;
 
 namespace Sessionize.Api.Client.IntegrationTests.ApiIntegrationTests;
@@ -69,9 +68,8 @@ public class GetScheduleTests : SessionizeIntegrationTestBase
         var client = GetService<ISessionizeApiClient>();
 
         // Act
-        var act = () => client.GetScheduleGridAsync();
 
         // Assert
-        await act.Should().ThrowAsync<SessionizeApiClientException>();
+        await Assert.ThrowsAsync<SessionizeApiClientException>(async () => await client.GetScheduleGridAsync());
     }
 }

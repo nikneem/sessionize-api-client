@@ -1,39 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Title>.NET Sessionize API Client Library</Title>
-    <Authors>Eduard Keilholz</Authors>
-    <Description>This is a .NET Client library that communicates with the Sessionize API to download sessions, speakers and other information about the conference(s) you organize</Description>
-    <PackageProjectUrl>https://github.com/nikneem/sessionize-api-client</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/nikneem/sessionize-api-client</RepositoryUrl>
-    <PackageTags>C#, Sessionize, API, Client</PackageTags>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageIcon>sessionize-icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Added support for Cancellation Tokens so the HTTP Requests to the Sessionize API can be cancelled</PackageReleaseNotes>
-  </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="DependencyInjection\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="..\..\README.md">
-	  <Pack>True</Pack>
-	  <PackagePath>\</PackagePath>
-	</None>
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Title>.NET Sessionize API Client Library</Title>
+		<Authors>Eduard Keilholz</Authors>
+		<Description>This is a .NET Client library that communicates with the Sessionize API to download sessions, speakers and other information about the conference(s) you organize</Description>
+		<PackageProjectUrl>https://github.com/nikneem/sessionize-api-client</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/nikneem/sessionize-api-client</RepositoryUrl>
+		<PackageTags>C#, Sessionize, API, Client</PackageTags>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageIcon>sessionize-icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>Added support for Cancellation Tokens so the HTTP Requests to the Sessionize API can be cancelled</PackageReleaseNotes>
+	</PropertyGroup>
+	<ItemGroup>
+		<Folder Include="DependencyInjection\" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\..\README.md">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 	<ItemGroup>
 		<None Include="sessionize-icon.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.1.0" />
+	</ItemGroup>
 </Project>

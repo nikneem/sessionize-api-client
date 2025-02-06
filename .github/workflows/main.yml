@@ -45,12 +45,10 @@ jobs:
     name: Deploy NuGet Package
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v2
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: nuget-package
           path: ./package
       - name: Publish
-        run: nuget push package/*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
+        run: dotnet nuget push package/*.nupkg --source 'https://api.nuget.org/v3/index.json' --api-key ${{secrets.NUGET_API_KEY}}

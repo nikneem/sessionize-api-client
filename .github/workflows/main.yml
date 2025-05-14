@@ -62,21 +62,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create Tag and Release
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const version = '${{ needs.version.outputs.majorMinorPatch }}';
-            const tagName = `v${version}`;
-            const releaseName = `Release v${version}`;
-
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/#{tagname}',
-              sha: context.sha
-            })
+      - run: gh release create v1.2.3 --title "Release v${{ needs.version.outputs.majorMinorPatch }}" --target main --generate-notes
 
       - name: Download Artifact
         uses: actions/download-artifact@v4

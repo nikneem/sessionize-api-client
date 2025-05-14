@@ -1,3 +1,13 @@
+<h1 align="center">
+  <br>
+    Sessionize HTTP Client
+  <br>
+</h1>
+
+<h4 align="center">A HTTP Client for the Sessionize API</h4>
+
+<div align="center">
+
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/nikneem/sessionize-api-client)
 ![NuGet Downloads](https://img.shields.io/nuget/dt/Sessionize.Api.Client)
 ![GitHub License](https://img.shields.io/github/license/nikneem/sessionize-api-client)
@@ -12,7 +22,12 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
 
-# Sessionize HTTP Client Library for .NET
+<a href="#overview">Overview</a> •
+<a href="#features">Features</a> •
+<a href="#configuration">Configuration</a> •
+<a href="#license">License</a>
+
+</div>
 
 ## Overview
 
@@ -53,3 +68,7 @@ The ApiId is optional. You can also create an instance of the `SessionizeApiClie
 ## Depencency Injection
 
 You can take advantage of Dependency Injection. When your configuration is all set and, just do a `services.AddSessionizeApiClient()` and pass in your `IConfigurationBuilder` to add the API client to your Service Collection. You can now inject the `ISessionizeApiClient` interface wherever you need to call the API.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

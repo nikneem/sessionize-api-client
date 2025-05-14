@@ -1,3 +1,8 @@
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/nikneem/sessionize-api-client)
+![NuGet Downloads](https://img.shields.io/nuget/dt/Sessionize.Api.Client)
+![GitHub License](https://img.shields.io/github/license/nikneem/sessionize-api-client)
+![GitHub last commit](https://img.shields.io/github/last-commit/nikneem/sessionize-api-client)
+![GitHub Release](https://img.shields.io/github/v/release/nikneem/sessionize-api-client)
 [![Publish NuGet Package](https://github.com/nikneem/sessionize-api-client/actions/workflows/main.yml/badge.svg)](https://github.com/nikneem/sessionize-api-client/actions/workflows/main.yml)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=bugs)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=nikneem_sessionize-api-client&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=nikneem_sessionize-api-client)

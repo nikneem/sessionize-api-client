@@ -3,52 +3,112 @@ name: Publish NuGet Package
 on: [push]
 
 jobs:
-  build:
+  version:
     runs-on: ubuntu-latest
-
-    name: Update NuGet
+    name: Determine Version
+    outputs:
+      assemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}
+      majorMinorPatch: ${{ steps.gitversion.outputs.MajorMinorPatch }}
+      sha: ${{ steps.gitversion.outputs.Sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0"
 
-      # Install GitVersion to automatically create a semantic
-      # version from your repository:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v1.1.1
         with:
           versionSpec: "5.x"
 
-      # Run GitVersion (set an ID to later fetch values)
       - name: Determine Version
         id: gitversion
         uses: gittools/actions/gitversion/execute@v1.1.1
         with:
           useConfigFile: true
 
-      - run: dotnet build src -c Release /p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} /p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} /p:InformationalVersion=${{ steps.gitversion.outputs.Sha }}
+  build:
+    needs: [version]
+    runs-on: ubuntu-latest
+    name: Build and Package
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0"
+
+      - run: dotnet build src -c Release /p:AssemblyVersion=${{ needs.version.outputs.assemblySemFileVer }} /p:FileVersion=${{ needs.version.outputs.assemblySemFileVer }} /p:InformationalVersion=${{ needs.version.outputs.sha }}
       - run: dotnet test src
-      - run: dotnet pack src/Sessionize.Api.Client/Sessionize.Api.Client.csproj -c Release -p:AssemblyVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} -p:FileVersion=${{ steps.gitversion.outputs.assemblySemFileVer }} -p:InformationalVersion=${{ steps.gitversion.outputs.Sha }} -p:PackageVersion=${{ steps.gitversion.outputs.MajorMinorPatch }}
+      - run: dotnet pack src/Sessionize.Api.Client/Sessionize.Api.Client.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.assemblySemFileVer }} -p:FileVersion=${{ needs.version.outputs.assemblySemFileVer }} -p:InformationalVersion=${{ needs.version.outputs.sha }} -p:PackageVersion=${{ needs.version.outputs.majorMinorPatch }}
+
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
           name: nuget-package
-          path: src/Sessionize.Api.Client/bin/Release/*${{ steps.gitversion.outputs.MajorMinorPatch }}.nupkg
+          path: src/Sessionize.Api.Client/bin/Release/*${{ needs.version.outputs.majorMinorPatch }}.nupkg
 
   deploy:
-    needs: [build]
+    needs: [build, version]
     runs-on: ubuntu-latest
     name: Deploy NuGet Package
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Tag and Release
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const version = '${{ needs.version.outputs.majorMinorPatch }}';
+            const tagName = `v${version}`;
+            const releaseName = `Release v${version}`;
+
+            // Check if tag exists
+            try {
+              await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${tagName}`
+              });
+              console.log(`Tag ${tagName} already exists, skipping tag creation`);
+            } catch (e) {
+              // Create tag
+              const sha = '${{ needs.version.outputs.sha }}';
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/tags/${tagName}`,
+                sha: sha
+              });
+              console.log(`Created tag ${tagName}`);
+              
+              // Create release
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                name: releaseName,
+                body: `Automated release for version ${version}`,
+                draft: false,
+                prerelease: false,
+                generate_release_notes: true
+              });
+              console.log(`Created release ${releaseName}`);
+            }
+
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: nuget-package
           path: ./package
+
       - name: Publish
         run: dotnet nuget push package/*.nupkg --source 'https://api.nuget.org/v3/index.json' --api-key ${{secrets.NUGET_API_KEY}}

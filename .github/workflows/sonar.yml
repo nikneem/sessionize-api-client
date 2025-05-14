@@ -52,3 +52,9 @@ jobs:
           dotnet build src --no-incremental
           dotnet-coverage collect "dotnet test src" -f xml -o coverage.xml
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml

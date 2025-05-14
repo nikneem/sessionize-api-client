@@ -62,7 +62,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - run: gh release create v1.2.3 --title "Release v${{ needs.version.outputs.majorMinorPatch }}" --target main --generate-notes
+      # - run: gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
+      - run: gh release create v${{ needs.version.outputs.majorMinorPatch }} --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Artifact
         uses: actions/download-artifact@v4

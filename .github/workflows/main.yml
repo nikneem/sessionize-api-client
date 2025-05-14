@@ -71,38 +71,12 @@ jobs:
             const tagName = `v${version}`;
             const releaseName = `Release v${version}`;
 
-            // Check if tag exists
-            try {
-              await github.rest.git.getRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `tags/${tagName}`
-              });
-              console.log(`Tag ${tagName} already exists, skipping tag creation`);
-            } catch (e) {
-              // Create tag
-              const sha = '${{ needs.version.outputs.sha }}';
-              await github.rest.git.createRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `refs/tags/${tagName}`,
-                sha: sha
-              });
-              console.log(`Created tag ${tagName}`);
-              
-              // Create release
-              await github.rest.repos.createRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                tag_name: tagName,
-                name: releaseName,
-                body: `Automated release for version ${version}`,
-                draft: false,
-                prerelease: false,
-                generate_release_notes: true
-              });
-              console.log(`Created release ${releaseName}`);
-            }
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/#{tagname}',
+              sha: context.sha
+            })
 
       - name: Download Artifact
         uses: actions/download-artifact@v4

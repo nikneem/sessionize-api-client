@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Sessionize.Api.Client.Abstractions;
 using Sessionize.Api.Client.Configuration;
-using Sessionize.Api.Client.Exceptions;
 
 namespace Sessionize.Api.Client.DependencyInjection;
 

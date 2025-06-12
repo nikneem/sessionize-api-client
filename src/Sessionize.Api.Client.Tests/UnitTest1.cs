@@ -150,6 +150,66 @@ public class SessionFilterTests
         Assert.True(result[0].IsTopSpeaker);
     }
 
+    [Fact]
+    public async Task GetAllDataAsync_WithNullFilter_ReturnsAllData()
+    {
+        // Arrange
+        var testData = CreateTestAllDataResponse();
+        var httpClient = SetupHttpClientWithResponse(testData);
+        _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+        // Act
+        var result = await _client.GetAllDataAsync((SessionFilter?)null);
+
+        // Assert
+        Assert.Equal(2, result.Sessions.Count);
+        Assert.Equal(2, result.Speakers.Count);
+    }
+
+    [Fact]
+    public async Task GetSessionsListAsync_WithSessionFilter_FiltersCorrectly()
+    {
+        // Arrange
+        var testData = CreateTestSessionsListResponse();
+        var httpClient = SetupHttpClientWithResponse(testData);
+        _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+        var filter = new SessionFilter { Title = "Session 1" };
+
+        // Act
+        var result = await _client.GetSessionsListAsync(filter);
+
+        // Assert
+        Assert.Single(result);
+        Assert.Single(result[0].Sessions);
+        Assert.Equal("Test Session 1", result[0].Sessions[0].Title);
+    }
+
+    [Fact]
+    public async Task GetAllDataAsync_WithComplexFilter_HandlesMultipleCriteria()
+    {
+        // Arrange
+        var testData = CreateComplexTestAllDataResponse();
+        var httpClient = SetupHttpClientWithResponse(testData);
+        _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+        var filter = new SessionFilter 
+        { 
+            Title = "Advanced",
+            StartDate = new DateTimeOffset(2024, 1, 1, 14, 0, 0, TimeSpan.Zero),
+            EndDate = new DateTimeOffset(2024, 1, 1, 16, 0, 0, TimeSpan.Zero)
+        };
+
+        // Act
+        var result = await _client.GetAllDataAsync(filter);
+
+        // Assert
+        Assert.Single(result.Sessions);
+        Assert.Equal("Advanced Session", result.Sessions[0].Title);
+        Assert.Single(result.Speakers); // Only speaker with matching session should remain
+        Assert.Equal("Advanced", result.Speakers[0].FirstName);
+    }
+
     private HttpClient SetupHttpClientWithResponse<T>(T data)
     {
         var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
@@ -210,5 +270,61 @@ public class SessionFilterTests
             new(Guid.NewGuid(), "Speaker", "One", "Speaker One", "Tag 1", "pic1.jpg", false),
             new(Guid.NewGuid(), "Speaker", "Two", "Speaker Two", "Tag 2", "pic2.jpg", true)
         };
+    }
+
+    private List<SessionListResponse> CreateTestSessionsListResponse()
+    {
+        return new List<SessionListResponse>
+        {
+            new(true, "group1", "Group 1", new List<SessionInfo>
+            {
+                new("1", "Test Session 1", "Description 1", 
+                    new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero), 
+                    new DateTimeOffset(2024, 1, 1, 11, 0, 0, TimeSpan.Zero),
+                    false, false, 1, "Room 1", "Confirmed", true, true, 
+                    new List<SessionSpeaker> { new("speaker1", "Speaker One") }),
+                new("2", "Test Session 2", "Description 2", 
+                    new DateTimeOffset(2024, 1, 2, 10, 0, 0, TimeSpan.Zero), 
+                    new DateTimeOffset(2024, 1, 2, 11, 0, 0, TimeSpan.Zero),
+                    false, false, 2, "Room 2", "Confirmed", true, true, 
+                    new List<SessionSpeaker> { new("speaker2", "Speaker Two") })
+            })
+        };
+    }
+
+    private AllDataResponse CreateComplexTestAllDataResponse()
+    {
+        return new AllDataResponse(
+            Sessions: new List<SessionDetails>
+            {
+                new("1", "Basic Session", "Basic description", 
+                    new DateTime(2024, 1, 1, 10, 0, 0), new DateTime(2024, 1, 1, 11, 0, 0),
+                    false, false, new List<string> { "speaker1" }, new List<object>(), new List<object>(),
+                    1, "", "", "Confirmed", true, true),
+                new("2", "Advanced Session", "Advanced description", 
+                    new DateTime(2024, 1, 1, 15, 0, 0), new DateTime(2024, 1, 1, 16, 0, 0),
+                    false, false, new List<string> { "speaker2" }, new List<object>(), new List<object>(),
+                    2, "", "", "Confirmed", true, true),
+                new("3", "Expert Session", "Expert description", 
+                    new DateTime(2024, 1, 2, 10, 0, 0), new DateTime(2024, 1, 2, 11, 0, 0),
+                    false, false, new List<string> { "speaker3" }, new List<object>(), new List<object>(),
+                    3, "", "", "Confirmed", true, true)
+            },
+            Speakers: new List<SpeakerDetails>
+            {
+                new("speaker1", "Basic", "Speaker", "Bio 1", "Tag 1", "pic1.jpg", false, 
+                    new object[0], new int[] { 1 }, "Basic Speaker", new object[0], new object[0]),
+                new("speaker2", "Advanced", "Speaker", "Bio 2", "Tag 2", "pic2.jpg", true, 
+                    new object[0], new int[] { 2 }, "Advanced Speaker", new object[0], new object[0]),
+                new("speaker3", "Expert", "Speaker", "Bio 3", "Tag 3", "pic3.jpg", false, 
+                    new object[0], new int[] { 3 }, "Expert Speaker", new object[0], new object[0])
+            },
+            Rooms: new List<RoomName>
+            {
+                new(1, "Room 1", 1),
+                new(2, "Room 2", 2),
+                new(3, "Room 3", 3)
+            }
+        );
     }
 }

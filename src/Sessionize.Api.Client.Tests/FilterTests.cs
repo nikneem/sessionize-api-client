@@ -7,7 +7,6 @@ using Sessionize.Api.Client.DataTransferObjects;
 using Sessionize.Api.Client.Filters;
 using Sessionize.Api.Client.ValueObjects;
 using System.Net;
-using System.Text;
 using System.Text.Json;
 
 namespace Sessionize.Api.Client.Tests;
@@ -230,11 +229,11 @@ public class SessionFilterTests
             Sessions: new List<SessionDetails>
             {
                 new("1", "Test Session 1", "Description 1", 
-                    new DateTime(2024, 1, 1, 10, 0, 0), new DateTime(2024, 1, 1, 11, 0, 0),
+                    new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero), new DateTimeOffset(2024, 1, 1, 11, 0, 0, TimeSpan.Zero),
                     false, false, new List<string> { "speaker1" }, new List<object>(), new List<object>(),
                     1, "", "", "Confirmed", true, true),
                 new("2", "Test Session 2", "Description 2", 
-                    new DateTime(2024, 1, 2, 10, 0, 0), new DateTime(2024, 1, 2, 11, 0, 0),
+                    new DateTimeOffset(2024, 1, 2, 10, 0, 0, TimeSpan.Zero), new DateTimeOffset(2024, 1, 2, 11, 0, 0, TimeSpan.Zero),
                     false, false, new List<string> { "speaker2" }, new List<object>(), new List<object>(),
                     2, "", "", "Confirmed", true, true)
             },

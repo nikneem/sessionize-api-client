@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build and analyze
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
@@ -17,38 +17,41 @@ jobs:
         with:
           dotnet-version: "9.0"
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: "zulu" # Alternative distribution options are available.
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
-          path: ~\sonar\cache
+          path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Install SonarCloud scanner (global)
-        shell: pwsh
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
-      - name: Install dotnet-coverage
-        shell: pwsh
-        run: dotnet tool install --global dotnet-coverage
+        run: dotnet tool install --global dotnet-sonarscanner
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: pwsh
+        shell: bash
         working-directory: ${{ github.workspace }}
         run: |
-          $coverage = Join-Path $env:GITHUB_WORKSPACE "coverage.xml"
-          dotnet sonarscanner begin /k:"nikneem_sessionize-api-client" /o:"nikneem" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths="$coverage" /d:sonar.projectBaseDir="$env:GITHUB_WORKSPACE"
-          dotnet build src --no-incremental
-          dotnet-coverage collect "dotnet test src" -f xml -o "$coverage"
+          export PATH="$HOME/.dotnet/tools:$PATH"
+          dotnet sonarscanner begin \
+            /k:"nikneem_sessionize-api-client" \
+            /o:"nikneem" \
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.verbose=true \
+            /d:sonar.coverageReportPaths="**/TestResults/**/coverage.cobertura.xml"
+          dotnet build "src/Sessionize API Client.sln" --no-incremental
+          dotnet test "src/Sessionize API Client.sln" --no-build --collect:"XPlat Code Coverage"
+          ls -la .sonarqube || true
+          ls -la .sonarqube/conf || true
           dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage.xml
+          path: '**/TestResults/**/coverage.cobertura.xml'

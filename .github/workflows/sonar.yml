@@ -27,31 +27,25 @@ jobs:
           path: ~\sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Cache SonarCloud scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@v4
-        with:
-          path: .\.sonar\scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
-      - name: Install SonarCloud scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: powershell
+      - name: Install SonarCloud scanner (global)
+        shell: pwsh
         run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+          dotnet tool install --global dotnet-sonarscanner
       - name: Install dotnet-coverage
+        shell: pwsh
         run: dotnet tool install --global dotnet-coverage
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: powershell
+        shell: pwsh
+        working-directory: ${{ github.workspace }}
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"nikneem_sessionize-api-client" /o:"nikneem" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+          $coverage = Join-Path $env:GITHUB_WORKSPACE "coverage.xml"
+          dotnet sonarscanner begin /k:"nikneem_sessionize-api-client" /o:"nikneem" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths="$coverage" /d:sonar.projectBaseDir="$env:GITHUB_WORKSPACE"
           dotnet build src --no-incremental
-          dotnet-coverage collect "dotnet test src" -f xml -o coverage.xml
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          dotnet-coverage collect "dotnet test src" -f xml -o "$coverage"
+          dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Publish Artifact
         uses: actions/upload-artifact@v4

@@ -46,7 +46,7 @@ jobs:
       - run: dotnet pack src/Sessionize.Api.Client/Sessionize.Api.Client.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.assemblySemFileVer }} -p:FileVersion=${{ needs.version.outputs.assemblySemFileVer }} -p:InformationalVersion=${{ needs.version.outputs.sha }} -p:PackageVersion=${{ needs.version.outputs.majorMinorPatch }}
 
       - name: Publish Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: nuget-package
           path: src/Sessionize.Api.Client/bin/Release/*${{ needs.version.outputs.majorMinorPatch }}.nupkg

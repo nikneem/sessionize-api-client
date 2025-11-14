@@ -8,17 +8,39 @@ namespace Sessionize.Api.Client.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSessionizeApiClient(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         IConfigurationBuilder configurationBuilder,
         string? configurationSectionName = null)
     {
-        var sectionName = configurationSectionName?? SessionizeConfiguration.SectionName;
+        var sectionName = configurationSectionName ?? SessionizeConfiguration.SectionName;
 
         var configuration = configurationBuilder.Build();
         services.AddOptions<SessionizeConfiguration>()
             .Bind(configuration.GetSection(sectionName))
             .ValidateOnStart();
-       
+
+
+        services.AddHttpClient<SessionizeApiClient>()
+            .AddStandardResilienceHandler();
+
+        services.AddScoped<ISessionizeApiClient, SessionizeApiClient>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddSessionizeApiClient(
+        this IServiceCollection services)
+    {
+        var defaultConfiguration = new SessionizeConfiguration
+        {
+            BaseUrl = "https://sessionize.com",
+        };
+
+        services.Configure<SessionizeConfiguration>(options =>
+        {
+            options.BaseUrl = defaultConfiguration.BaseUrl;
+        });
+
 
         services.AddHttpClient<SessionizeApiClient>()
             .AddStandardResilienceHandler();

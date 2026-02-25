@@ -5,7 +5,7 @@ namespace Sessionize.Api.Client.Configuration;
 
 public class SessionizeConfigurationValidation : IValidateOptions<SessionizeConfiguration>
 {
-    private static readonly Regex ApiIdRegex = new("^[a-zA-Z0-9]{8,12}$", RegexOptions.Compiled);
+    private static readonly Regex ApiIdRegex = new("^[a-zA-Z0-9]{8,12}$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
 
     public ValidateOptionsResult Validate(string? name, SessionizeConfiguration options)
     {

@@ -17,7 +17,7 @@ public class SessionizeApiClient : ISessionizeApiClient
     private readonly ILogger<SessionizeApiClient> _logger;
     private readonly IOptions<SessionizeConfiguration> _sessionizeConfiguration;
 
-    private static readonly Regex ApiIdRegex = new("^[a-zA-Z0-9]{8,12}$", RegexOptions.Compiled);
+    private static readonly Regex ApiIdRegex = new("^[a-zA-Z0-9]{8,12}$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
 
     private readonly Lazy<JsonSerializerOptions> _jsonDeSerializerOptions = new(() =>
         new JsonSerializerOptions

@@ -118,7 +118,6 @@ public class SessionizeApiClient : ISessionizeApiClient
         var httpClient = _httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(_sessionizeConfiguration.Value.BaseUrl);
         var httpRequest = GetRequest(endpoint, sessionizeApiId);
-        _logger.LogInformation("Sending GET request to endpoint {Endpoint}", httpRequest.RequestUri);
         var response = await httpClient.SendAsync(httpRequest, ct);
         response.EnsureSuccessStatusCode();
         return await DeserializeResponse<TResult>(response.Content);

@@ -30,10 +30,9 @@ public class GetSpeakerListTests : SessionizeIntegrationTestBase
 
         // Arrange
         var client = GetService<ISessionizeApiClient>();
-        client.SessionizeApiId = "45br5oxc";
 
         // Act
-        var result = await client.GetSpeakersListAsync();
+        var result = await client.GetSpeakersListAsync("45br5oxc");
 
         // Assert
         Assert.NotNull(result);

@@ -30,10 +30,9 @@ public class GetSpeakerWallTests : SessionizeIntegrationTestBase
 
         // Arrange
         var client = GetService<ISessionizeApiClient>();
-        client.SessionizeApiId = "45br5oxc";
 
         // Act
-        var result = await client.GetSpeakerWallAsync();
+        var result = await client.GetSpeakerWallAsync("45br5oxc");
 
         // Assert
         Assert.NotNull(result);

@@ -22,7 +22,7 @@ public class SessionizeApiClient : ISessionizeApiClient
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
 
-    public string? SessionizeApiId { get; set; }
+    public string? SessionizeApiId { get; init; }
 
     public Task<AllDataResponse> GetAllDataAsync(string? sessionizeApiId = null, CancellationToken? cancellationToken = null)
     {

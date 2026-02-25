@@ -30,10 +30,9 @@ public class GetSessionListTests : SessionizeIntegrationTestBase
 
         // Arrange
         var client = GetService<ISessionizeApiClient>();
-        client.SessionizeApiId = "45br5oxc";
 
         // Act
-        var result = await client.GetSessionsListAsync();
+        var result = await client.GetSessionsListAsync("45br5oxc");
 
         // Assert
         Assert.NotNull(result);

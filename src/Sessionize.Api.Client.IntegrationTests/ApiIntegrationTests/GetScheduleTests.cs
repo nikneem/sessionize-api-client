@@ -30,10 +30,9 @@ public class GetScheduleTests : SessionizeIntegrationTestBase
 
         // Arrange
         var client = GetService<ISessionizeApiClient>();
-        client.SessionizeApiId = "45br5oxc";
 
         // Act
-        var result = await client.GetScheduleGridAsync();
+        var result = await client.GetScheduleGridAsync("45br5oxc");
 
         // Assert
         Assert.NotNull(result);

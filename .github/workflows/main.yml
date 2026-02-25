@@ -73,16 +73,6 @@ jobs:
     name: Deploy NuGet Package
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      # - run: gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
-      - run: gh release create v${{ needs.version.outputs.mmp }} --generate-notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Download Artifact
         uses: actions/download-artifact@v7
         with:

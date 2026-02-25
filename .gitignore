@@ -396,3 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Sessionize API Client - Sensitive configuration files
+**/appsettings-public-api.json

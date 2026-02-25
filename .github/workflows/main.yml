@@ -48,6 +48,15 @@ jobs:
         with:
           dotnet-version: "10.0"
 
+      - name: Create test configuration
+        run: |
+          echo '{
+            "Sessionize": {
+              "BaseUrl": "https://sessionize.com",
+              "ApiId": "${{ secrets.SESSIONIZE_API_ID }}"
+            }
+          }' > src/Sessionize.Api.Client.IntegrationTests/appsettings-public-api.json
+
       - run: dotnet build src -c Release /p:AssemblyVersion=${{ needs.version.outputs.informationalVersion }} /p:FileVersion=${{ needs.version.outputs.informationalVersion }} /p:InformationalVersion=${{ needs.version.outputs.informationalVersion }}
       - run: dotnet test src
       - run: dotnet pack src/Sessionize.Api.Client/Sessionize.Api.Client.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.informationalVersion }} -p:FileVersion=${{ needs.version.outputs.informationalVersion }} -p:InformationalVersion=${{ needs.version.outputs.informationalVersion }} -p:PackageVersion=${{ needs.version.outputs.mmp }}

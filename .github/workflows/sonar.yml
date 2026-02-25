@@ -47,6 +47,19 @@ jobs:
 
       - name: Install dotnet-coverage
         run: dotnet tool install --global dotnet-coverage
+      
+      - name: Create test configuration
+        shell: powershell
+        run: |
+          @"
+          {
+            "Sessionize": {
+              "BaseUrl": "https://sessionize.com",
+              "ApiId": "${{ secrets.SESSIONIZE_API_ID }}"
+            }
+          }
+          "@ | Out-File -FilePath src\Sessionize.Api.Client.IntegrationTests\appsettings-public-api.json -Encoding utf8
+      
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any

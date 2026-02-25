@@ -10,9 +10,18 @@ public class SessionizeConfigurationValidation : IValidateOptions<SessionizeConf
     public ValidateOptionsResult Validate(string? name, SessionizeConfiguration options)
     {
         var errorList = new List<string>();
-        if (string.IsNullOrWhiteSpace(options.BaseUrl))
+
+        // Validate BaseUrl format and HTTPS
+        if (!string.IsNullOrWhiteSpace(options.BaseUrl))
         {
-            errorList.Add($"The app setting {SessionizeConfiguration.SectionName}.{nameof(options.BaseUrl)} cannot be null or empty");
+            if (!Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out var uri))
+            {
+                errorList.Add($"The app setting {SessionizeConfiguration.SectionName}.{nameof(options.BaseUrl)} must be a valid absolute URI");
+            }
+            else if (uri.Scheme != Uri.UriSchemeHttps)
+            {
+                errorList.Add($"The app setting {SessionizeConfiguration.SectionName}.{nameof(options.BaseUrl)} must use HTTPS for secure communication");
+            }
         }
 
         if (!string.IsNullOrWhiteSpace(options.ApiId) && !ApiIdRegex.IsMatch(options.ApiId))

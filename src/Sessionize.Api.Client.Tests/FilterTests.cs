@@ -23,14 +23,14 @@ public class SessionFilterTests
         _httpClientFactoryMock = new Mock<IHttpClientFactory>();
         _loggerMock = new Mock<ILogger<SessionizeApiClient>>();
         _configMock = new Mock<IOptions<SessionizeConfiguration>>();
-        
+
         var config = new SessionizeConfiguration
         {
             BaseUrl = "https://sessionize.com/api/v2/",
-            ApiId = "test-api-id"
+            ApiId = "testapi01"
         };
         _configMock.Setup(x => x.Value).Returns(config);
-        
+
         _client = new SessionizeApiClient(_httpClientFactoryMock.Object, _loggerMock.Object, _configMock.Object);
     }
 
@@ -79,8 +79,8 @@ public class SessionFilterTests
         var httpClient = SetupHttpClientWithResponse(testData);
         _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-        var filter = new SessionFilter 
-        { 
+        var filter = new SessionFilter
+        {
             StartDate = new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero),
             EndDate = new DateTimeOffset(2024, 1, 1, 11, 0, 0, TimeSpan.Zero)
         };
@@ -192,8 +192,8 @@ public class SessionFilterTests
         var httpClient = SetupHttpClientWithResponse(testData);
         _httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-        var filter = new SessionFilter 
-        { 
+        var filter = new SessionFilter
+        {
             Title = "Advanced",
             StartDate = new DateTimeOffset(2024, 1, 1, 14, 0, 0, TimeSpan.Zero),
             EndDate = new DateTimeOffset(2024, 1, 1, 16, 0, 0, TimeSpan.Zero)
@@ -215,7 +215,7 @@ public class SessionFilterTests
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
-        
+
         var handler = new Mock<HttpMessageHandler>();
         handler.SetupAnyRequest()
                .ReturnsResponse(HttpStatusCode.OK, json, "application/json");
@@ -228,20 +228,20 @@ public class SessionFilterTests
         return new AllDataResponse(
             Sessions: new List<SessionDetails>
             {
-                new("1", "Test Session 1", "Description 1", 
+                new("1", "Test Session 1", "Description 1",
                     new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero), new DateTimeOffset(2024, 1, 1, 11, 0, 0, TimeSpan.Zero),
                     false, false, new List<string> { "speaker1" }, new List<object>(), new List<object>(),
                     1, "", "", "Confirmed", true, true),
-                new("2", "Test Session 2", "Description 2", 
+                new("2", "Test Session 2", "Description 2",
                     new DateTimeOffset(2024, 1, 2, 10, 0, 0, TimeSpan.Zero), new DateTimeOffset(2024, 1, 2, 11, 0, 0, TimeSpan.Zero),
                     false, false, new List<string> { "speaker2" }, new List<object>(), new List<object>(),
                     2, "", "", "Confirmed", true, true)
             },
             Speakers: new List<SpeakerDetails>
             {
-                new("speaker1", "Speaker", "One", "Bio 1", "Tag 1", "pic1.jpg", false, 
+                new("speaker1", "Speaker", "One", "Bio 1", "Tag 1", "pic1.jpg", false,
                     new object[0], new int[] { 1 }, "Speaker One", new object[0], new object[0]),
-                new("speaker2", "Speaker", "Two", "Bio 2", "Tag 2", "pic2.jpg", true, 
+                new("speaker2", "Speaker", "Two", "Bio 2", "Tag 2", "pic2.jpg", true,
                     new object[0], new int[] { 2 }, "Speaker Two", new object[0], new object[0])
             },
             Rooms: new List<RoomName>
@@ -277,15 +277,15 @@ public class SessionFilterTests
         {
             new(true, "group1", "Group 1", new List<SessionInfo>
             {
-                new("1", "Test Session 1", "Description 1", 
-                    new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero), 
+                new("1", "Test Session 1", "Description 1",
+                    new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero),
                     new DateTimeOffset(2024, 1, 1, 11, 0, 0, TimeSpan.Zero),
-                    false, false, 1, "Room 1", "Confirmed", true, true, 
+                    false, false, 1, "Room 1", "Confirmed", true, true,
                     new List<SessionSpeaker> { new("speaker1", "Speaker One") }),
-                new("2", "Test Session 2", "Description 2", 
-                    new DateTimeOffset(2024, 1, 2, 10, 0, 0, TimeSpan.Zero), 
+                new("2", "Test Session 2", "Description 2",
+                    new DateTimeOffset(2024, 1, 2, 10, 0, 0, TimeSpan.Zero),
                     new DateTimeOffset(2024, 1, 2, 11, 0, 0, TimeSpan.Zero),
-                    false, false, 2, "Room 2", "Confirmed", true, true, 
+                    false, false, 2, "Room 2", "Confirmed", true, true,
                     new List<SessionSpeaker> { new("speaker2", "Speaker Two") })
             })
         };
@@ -296,26 +296,26 @@ public class SessionFilterTests
         return new AllDataResponse(
             Sessions: new List<SessionDetails>
             {
-                new("1", "Basic Session", "Basic description", 
+                new("1", "Basic Session", "Basic description",
                     new DateTime(2024, 1, 1, 10, 0, 0), new DateTime(2024, 1, 1, 11, 0, 0),
                     false, false, new List<string> { "speaker1" }, new List<object>(), new List<object>(),
                     1, "", "", "Confirmed", true, true),
-                new("2", "Advanced Session", "Advanced description", 
+                new("2", "Advanced Session", "Advanced description",
                     new DateTime(2024, 1, 1, 15, 0, 0), new DateTime(2024, 1, 1, 16, 0, 0),
                     false, false, new List<string> { "speaker2" }, new List<object>(), new List<object>(),
                     2, "", "", "Confirmed", true, true),
-                new("3", "Expert Session", "Expert description", 
+                new("3", "Expert Session", "Expert description",
                     new DateTime(2024, 1, 2, 10, 0, 0), new DateTime(2024, 1, 2, 11, 0, 0),
                     false, false, new List<string> { "speaker3" }, new List<object>(), new List<object>(),
                     3, "", "", "Confirmed", true, true)
             },
             Speakers: new List<SpeakerDetails>
             {
-                new("speaker1", "Basic", "Speaker", "Bio 1", "Tag 1", "pic1.jpg", false, 
+                new("speaker1", "Basic", "Speaker", "Bio 1", "Tag 1", "pic1.jpg", false,
                     new object[0], new int[] { 1 }, "Basic Speaker", new object[0], new object[0]),
-                new("speaker2", "Advanced", "Speaker", "Bio 2", "Tag 2", "pic2.jpg", true, 
+                new("speaker2", "Advanced", "Speaker", "Bio 2", "Tag 2", "pic2.jpg", true,
                     new object[0], new int[] { 2 }, "Advanced Speaker", new object[0], new object[0]),
-                new("speaker3", "Expert", "Speaker", "Bio 3", "Tag 3", "pic3.jpg", false, 
+                new("speaker3", "Expert", "Speaker", "Bio 3", "Tag 3", "pic3.jpg", false,
                     new object[0], new int[] { 3 }, "Expert Speaker", new object[0], new object[0])
             },
             Rooms: new List<RoomName>

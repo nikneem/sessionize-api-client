@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sessionize.Api.Client.Abstractions;
@@ -15,6 +16,8 @@ public class SessionizeApiClient : ISessionizeApiClient
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<SessionizeApiClient> _logger;
     private readonly IOptions<SessionizeConfiguration> _sessionizeConfiguration;
+
+    private static readonly Regex ApiIdRegex = new("^[a-zA-Z0-9]{8,12}$", RegexOptions.Compiled);
 
     private readonly Lazy<JsonSerializerOptions> _jsonDeSerializerOptions = new(() =>
         new JsonSerializerOptions
@@ -269,7 +272,17 @@ public class SessionizeApiClient : ISessionizeApiClient
             currentApiId = _sessionizeConfiguration.Value.ApiId;
         }
 
+        if (!IsValidApiId(currentApiId))
+        {
+            throw new SessionizeApiClientException(ErrorCode.InvalidApiId);
+        }
+
         return $"{currentApiId}/view/{viewName}";
+    }
+
+    private static bool IsValidApiId(string apiId)
+    {
+        return !string.IsNullOrWhiteSpace(apiId) && ApiIdRegex.IsMatch(apiId);
     }
 
     private async Task<TResponse> DeserializeResponse<TResponse>(HttpContent responseContent) where TResponse : class

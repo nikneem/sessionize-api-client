@@ -1,0 +1,56 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+        
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4.3.0
+        with:
+          versionSpec: '6.4.x'
+          
+      - name: Execute GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v4.3.0
+        
+      - name: Display version
+        run: |
+          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
+          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
+          echo "InformationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}"
+        
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.gitversion.outputs.semVer }}
+          release_name: Release v${{ steps.gitversion.outputs.semVer }}
+          body: |
+            ## Release v${{ steps.gitversion.outputs.semVer }}
+            
+            **Version Information:**
+            - Semantic Version: ${{ steps.gitversion.outputs.semVer }}
+            - Full SemVer: ${{ steps.gitversion.outputs.fullSemVer }}
+            - Informational Version: ${{ steps.gitversion.outputs.informationalVersion }}
+            - Branch: ${{ steps.gitversion.outputs.branchName }}
+            - Commit SHA: ${{ steps.gitversion.outputs.sha }}
+            
+            See the [full changelog](https://github.com/${{ github.repository }}/compare/v${{ steps.gitversion.outputs.majorMinorPatch }}...v${{ steps.gitversion.outputs.semVer }}) for details.
+          draft: false
+          prerelease: false

@@ -1,20 +1,39 @@
-assembly-versioning-scheme: MajorMinorPatch
+assembly-versioning-scheme: MajorMinorPatchTag
 assembly-file-versioning-scheme: MajorMinorPatchTag
-assembly-informational-format: "{InformationalVersion}"
-mode: Mainline
+assembly-informational-format: "{MajorMinorPatch}.{CommitsSinceVersionSource}"
+mode: ContinuousDeployment
 tag-prefix: "[vV]"
-continuous-delivery-fallback-tag: ci
 major-version-bump-message: '\+semver:\s?(breaking|major)'
 minor-version-bump-message: '\+semver:\s?(feature|minor)'
 patch-version-bump-message: '\+semver:\s?(fix|patch)'
 no-bump-message: '\+semver:\s?(none|skip)'
-legacy-semver-padding: 4
-build-metadata-padding: 4
-commits-since-version-source-padding: 4
 commit-message-incrementing: Enabled
-branches: {}
+branches:
+  main:
+    mode: ContinuousDeployment
+    label: ""
+    increment: Patch
+    regex: ^main$
+  master:
+    mode: ContinuousDeployment
+    label: ""
+    increment: Patch
+    regex: ^master$
+  pull-request:
+    mode: ContinuousDeployment
+    label: ""
+    increment: Patch
+    regex: ^(pull|pull\-requests|pr)[/-]
+  feature:
+    mode: ContinuousDeployment
+    label: ""
+    increment: Patch
+    regex: ^features?[/-]
+  develop:
+    mode: ContinuousDeployment
+    label: ""
+    increment: Patch
+    regex: ^(develop|development|gitversion)$
 ignore:
   sha: []
-increment: Inherit
-commit-date-format: yyyy-MM-dd
-merge-message-formats: {}
+increment: Patch

@@ -4,28 +4,33 @@ on: [push]
 
 jobs:
   version:
+    name: Calculate Version
     runs-on: ubuntu-latest
-    name: Determine Version
     outputs:
-      assemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}
-      majorMinorPatch: ${{ steps.gitversion.outputs.MajorMinorPatch }}
-      sha: ${{ steps.gitversion.outputs.Sha }}
+      semVer: ${{ steps.gitversion.outputs.semVer }}
+      assemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}
+      informationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Required for GitVersion
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v3.2.1
+        uses: gittools/actions/gitversion/setup@v4.3.0
         with:
-          versionSpec: "5.x"
-
-      - name: Determine Version
+          versionSpec: '6.4.x'
+          
+      - name: Execute GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v3.2.1
-        with:
-          useConfigFile: true
+        uses: gittools/actions/gitversion/execute@v4.3.0
+
+      - name: Display GitVersion outputs
+        run: |
+          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
+          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
+          echo "InformationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}"
 
   build:
     needs: [version]
@@ -33,7 +38,7 @@ jobs:
     name: Build and Package
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -46,7 +51,7 @@ jobs:
       - run: dotnet pack src/Sessionize.Api.Client/Sessionize.Api.Client.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.assemblySemFileVer }} -p:FileVersion=${{ needs.version.outputs.assemblySemFileVer }} -p:InformationalVersion=${{ needs.version.outputs.sha }} -p:PackageVersion=${{ needs.version.outputs.majorMinorPatch }}
 
       - name: Publish Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: nuget-package
           path: src/Sessionize.Api.Client/bin/Release/*${{ needs.version.outputs.majorMinorPatch }}.nupkg
@@ -58,7 +63,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -68,7 +73,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: nuget-package
           path: ./package

@@ -5,8 +5,8 @@ namespace Sessionize.Api.Client.Abstractions;
 
 public interface ISessionizeApiClient
 {
-    string? SessionizeApiId { get; set; }
-    Task<AllDataResponse> GetAllDataAsync(string? sessionizeApiId = null,CancellationToken? cancellationToken = null);
+    string? SessionizeApiId { get; init; }
+    Task<AllDataResponse> GetAllDataAsync(string? sessionizeApiId = null, CancellationToken? cancellationToken = null);
     Task<AllDataResponse> GetAllDataAsync(SessionFilter? filter, string? sessionizeApiId = null, CancellationToken? cancellationToken = null);
     Task<List<ScheduleGridResponse>> GetScheduleGridAsync(string? sessionizeApiId = null, CancellationToken? cancellationToken = null);
     Task<List<ScheduleGridResponse>> GetScheduleGridAsync(SessionFilter? filter, string? sessionizeApiId = null, CancellationToken? cancellationToken = null);

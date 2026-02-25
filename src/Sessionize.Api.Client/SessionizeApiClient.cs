@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sessionize.Api.Client.Abstractions;
@@ -16,13 +17,15 @@ public class SessionizeApiClient : ISessionizeApiClient
     private readonly ILogger<SessionizeApiClient> _logger;
     private readonly IOptions<SessionizeConfiguration> _sessionizeConfiguration;
 
+    private static readonly Regex ApiIdRegex = new("^[a-zA-Z0-9]{8,12}$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
+
     private readonly Lazy<JsonSerializerOptions> _jsonDeSerializerOptions = new(() =>
         new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
 
-    public string? SessionizeApiId { get; set; }
+    public string? SessionizeApiId { get; init; }
 
     public Task<AllDataResponse> GetAllDataAsync(string? sessionizeApiId = null, CancellationToken? cancellationToken = null)
     {
@@ -34,7 +37,7 @@ public class SessionizeApiClient : ISessionizeApiClient
     {
         _logger.LogInformation("Getting all data with filtering");
         var response = await SendRequestAsync<AllDataResponse>("All", sessionizeApiId, cancellationToken);
-        
+
         if (filter == null)
             return response;
 
@@ -51,7 +54,7 @@ public class SessionizeApiClient : ISessionizeApiClient
     {
         _logger.LogInformation("Getting schedule grid with filtering");
         var response = await SendRequestAsync<List<ScheduleGridResponse>>("GridSmart", sessionizeApiId, cancellationToken);
-        
+
         if (filter == null)
             return response;
 
@@ -68,7 +71,7 @@ public class SessionizeApiClient : ISessionizeApiClient
     {
         _logger.LogInformation("Getting speakers list with filtering");
         var response = await SendRequestAsync<List<SpeakerDetailsResponse>>("Speakers", sessionizeApiId, cancellationToken);
-        
+
         if (filter == null)
             return response;
 
@@ -85,7 +88,7 @@ public class SessionizeApiClient : ISessionizeApiClient
     {
         _logger.LogInformation("Getting sessions list with filtering");
         var response = await SendRequestAsync<List<SessionListResponse>>("Sessions", sessionizeApiId, cancellationToken);
-        
+
         if (filter == null)
             return response;
 
@@ -102,7 +105,7 @@ public class SessionizeApiClient : ISessionizeApiClient
     {
         _logger.LogInformation("Getting speaker wall with filtering");
         var response = await SendRequestAsync<List<SpeakerWallResponse>>("SpeakerWall", sessionizeApiId, cancellationToken);
-        
+
         if (filter == null)
             return response;
 
@@ -115,7 +118,6 @@ public class SessionizeApiClient : ISessionizeApiClient
         var httpClient = _httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(_sessionizeConfiguration.Value.BaseUrl);
         var httpRequest = GetRequest(endpoint, sessionizeApiId);
-        _logger.LogInformation("Sending GET request to endpoint {Endpoint}", httpRequest.RequestUri);
         var response = await httpClient.SendAsync(httpRequest, ct);
         response.EnsureSuccessStatusCode();
         return await DeserializeResponse<TResult>(response.Content);
@@ -125,13 +127,13 @@ public class SessionizeApiClient : ISessionizeApiClient
     {
         var filteredSessions = FilterSessions(response.Sessions, filter);
         var sessionIds = filteredSessions.Select(s => s.Id).ToHashSet();
-        
+
         // Filter speakers: remove speakers who have no sessions in the filtered set
-        var filteredSpeakers = response.Speakers.Where(speaker => 
+        var filteredSpeakers = response.Speakers.Where(speaker =>
             speaker.Sessions.Any(sessionId => sessionIds.Contains(sessionId.ToString()))).ToList();
-        
-        return response with 
-        { 
+
+        return response with
+        {
             Sessions = filteredSessions.ToList(),
             Speakers = filteredSpeakers
         };
@@ -182,11 +184,11 @@ public class SessionizeApiClient : ISessionizeApiClient
 
     private bool MatchesSessionFilter(SessionDetails session, SessionFilter filter)
     {
-        if (!string.IsNullOrEmpty(filter.Title) && 
+        if (!string.IsNullOrEmpty(filter.Title) &&
             !session.Title.Contains(filter.Title, StringComparison.OrdinalIgnoreCase))
             return false;
 
-        if (!string.IsNullOrEmpty(filter.Description) && 
+        if (!string.IsNullOrEmpty(filter.Description) &&
             !session.Description.Contains(filter.Description, StringComparison.OrdinalIgnoreCase))
             return false;
 
@@ -201,11 +203,11 @@ public class SessionizeApiClient : ISessionizeApiClient
 
     private bool MatchesSessionInfoFilter(SessionInfo session, SessionFilter filter)
     {
-        if (!string.IsNullOrEmpty(filter.Title) && 
+        if (!string.IsNullOrEmpty(filter.Title) &&
             !session.Title.Contains(filter.Title, StringComparison.OrdinalIgnoreCase))
             return false;
 
-        if (!string.IsNullOrEmpty(filter.Description) && 
+        if (!string.IsNullOrEmpty(filter.Description) &&
             (session.Description == null || !session.Description.Contains(filter.Description, StringComparison.OrdinalIgnoreCase)))
             return false;
 
@@ -220,11 +222,11 @@ public class SessionizeApiClient : ISessionizeApiClient
 
     private bool MatchesSpeakerFilter(SpeakerDetailsResponse speaker, SpeakerFilter filter)
     {
-        if (!string.IsNullOrEmpty(filter.FirstName) && 
+        if (!string.IsNullOrEmpty(filter.FirstName) &&
             !speaker.FirstName.Contains(filter.FirstName, StringComparison.OrdinalIgnoreCase))
             return false;
 
-        if (!string.IsNullOrEmpty(filter.LastName) && 
+        if (!string.IsNullOrEmpty(filter.LastName) &&
             !speaker.LastName.Contains(filter.LastName, StringComparison.OrdinalIgnoreCase))
             return false;
 
@@ -233,11 +235,11 @@ public class SessionizeApiClient : ISessionizeApiClient
 
     private bool MatchesSpeakerWallFilter(SpeakerWallResponse speaker, SpeakerFilter filter)
     {
-        if (!string.IsNullOrEmpty(filter.FirstName) && 
+        if (!string.IsNullOrEmpty(filter.FirstName) &&
             !speaker.FirstName.Contains(filter.FirstName, StringComparison.OrdinalIgnoreCase))
             return false;
 
-        if (!string.IsNullOrEmpty(filter.LastName) && 
+        if (!string.IsNullOrEmpty(filter.LastName) &&
             !speaker.LastName.Contains(filter.LastName, StringComparison.OrdinalIgnoreCase))
             return false;
 
@@ -269,7 +271,17 @@ public class SessionizeApiClient : ISessionizeApiClient
             currentApiId = _sessionizeConfiguration.Value.ApiId;
         }
 
+        if (!IsValidApiId(currentApiId))
+        {
+            throw new SessionizeApiClientException(ErrorCode.InvalidApiId);
+        }
+
         return $"{currentApiId}/view/{viewName}";
+    }
+
+    private static bool IsValidApiId(string apiId)
+    {
+        return !string.IsNullOrWhiteSpace(apiId) && ApiIdRegex.IsMatch(apiId);
     }
 
     private async Task<TResponse> DeserializeResponse<TResponse>(HttpContent responseContent) where TResponse : class

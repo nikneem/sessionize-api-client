@@ -10,6 +10,7 @@ jobs:
       semVer: ${{ steps.gitversion.outputs.semVer }}
       assemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}
       informationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}
+      mmp: ${{ steps.gitversion.outputs.majorMinorPatch }}
     
     steps:
       - name: Checkout code
@@ -18,19 +19,20 @@ jobs:
           fetch-depth: 0  # Required for GitVersion
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v4.3.0
+        uses: gittools/actions/gitversion/setup@v4.3.3
         with:
           versionSpec: '6.4.x'
           
       - name: Execute GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v4.3.0
+        uses: gittools/actions/gitversion/execute@v4.3.3
 
       - name: Display GitVersion outputs
         run: |
           echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
           echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
           echo "InformationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}"
+          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
 
   build:
     needs: [version]
@@ -46,15 +48,15 @@ jobs:
         with:
           dotnet-version: "10.0"
 
-      - run: dotnet build src -c Release /p:AssemblyVersion=${{ needs.version.outputs.assemblySemFileVer }} /p:FileVersion=${{ needs.version.outputs.assemblySemFileVer }} /p:InformationalVersion=${{ needs.version.outputs.sha }}
+      - run: dotnet build src -c Release /p:AssemblyVersion=${{ needs.version.outputs.informationalVersion }} /p:FileVersion=${{ needs.version.outputs.informationalVersion }} /p:InformationalVersion=${{ needs.version.outputs.informationalVersion }}
       - run: dotnet test src
-      - run: dotnet pack src/Sessionize.Api.Client/Sessionize.Api.Client.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.assemblySemFileVer }} -p:FileVersion=${{ needs.version.outputs.assemblySemFileVer }} -p:InformationalVersion=${{ needs.version.outputs.sha }} -p:PackageVersion=${{ needs.version.outputs.majorMinorPatch }}
+      - run: dotnet pack src/Sessionize.Api.Client/Sessionize.Api.Client.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.informationalVersion }} -p:FileVersion=${{ needs.version.outputs.informationalVersion }} -p:InformationalVersion=${{ needs.version.outputs.informationalVersion }} -p:PackageVersion=${{ needs.version.outputs.mmp }}
 
       - name: Publish Artifact
         uses: actions/upload-artifact@v6
         with:
           name: nuget-package
-          path: src/Sessionize.Api.Client/bin/Release/*${{ needs.version.outputs.majorMinorPatch }}.nupkg
+          path: src/Sessionize.Api.Client/bin/Release/*${{ needs.version.outputs.mmp }}.nupkg
 
   deploy:
     needs: [build, version]
@@ -68,7 +70,7 @@ jobs:
           fetch-depth: 0
 
       # - run: gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
-      - run: gh release create v${{ needs.version.outputs.majorMinorPatch }} --generate-notes
+      - run: gh release create v${{ needs.version.outputs.mmp }} --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

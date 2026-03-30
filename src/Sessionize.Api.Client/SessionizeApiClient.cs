@@ -52,6 +52,40 @@ public class SessionizeApiClient : ISessionizeApiClient
         return SendRequestAsync<List<SpeakerWallResponse>>("SpeakerWall", sessionizeApiId, cancellationToken);
     }
 
+    public async Task<DataChangedResponse> HasDataChangedAsync(string viewName, string? lastKnownHash = null, string? sessionizeApiId = null, CancellationToken? cancellationToken = null)
+    {
+        var ct = cancellationToken ?? CancellationToken.None;
+        var httpClient = _httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(_sessionizeConfiguration.Value.BaseUrl);
+
+        var endpoint = GetViewEndpoint(viewName, sessionizeApiId) + "?hashonly=true";
+        var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+
+        _logger.LogInformation("Fetching data hash from endpoint {Endpoint}", endpoint);
+
+        var response = await httpClient.SendAsync(request, ct);
+        response.EnsureSuccessStatusCode();
+
+        var serverHash = (await response.Content.ReadAsStringAsync(ct)).Trim();
+        if (string.IsNullOrWhiteSpace(serverHash))
+        {
+            _logger.LogWarning("Empty hash response from {Endpoint}, assuming data has changed", endpoint);
+            return new DataChangedResponse(true, string.Empty);
+        }
+
+        if (lastKnownHash is null)
+        {
+            _logger.LogInformation("No previous hash provided, returning current server hash");
+            return new DataChangedResponse(true, serverHash);
+        }
+
+        var hasChanged = !string.Equals(serverHash, lastKnownHash, StringComparison.OrdinalIgnoreCase);
+        _logger.LogInformation("Data changed check for {Endpoint}: server={ServerHash}, local={LocalHash}, hasChanged={HasChanged}",
+            endpoint, serverHash, lastKnownHash, hasChanged);
+
+        return new DataChangedResponse(hasChanged, serverHash);
+    }
+
     private async Task<TResult> SendRequestAsync<TResult>(string endpoint, string? sessionizeApiId = null, CancellationToken? cancellationToken = null) where TResult : class
     {
         var ct = cancellationToken ?? CancellationToken.None;

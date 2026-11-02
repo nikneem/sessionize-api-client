@@ -66,6 +66,7 @@ jobs:
         with:
           name: nuget-package
           path: src/Sessionize.Api.Client/bin/Release/*${{ needs.version.outputs.mmp }}.nupkg
+          retention-days: 7
 
   deploy:
     needs: [build, version]
